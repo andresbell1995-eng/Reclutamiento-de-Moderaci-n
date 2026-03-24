@@ -332,6 +332,13 @@
     box-shadow: 0 4px 24px var(--glow);
   }
 
+  .btn-submit:disabled {
+    background: #2a2d3a;
+    color: var(--muted);
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+  }
   .btn-submit:hover {
     background: #4752c4;
     transform: translateY(-2px);
@@ -562,16 +569,14 @@
         <div class="section-line"></div>
       </div>
 
+
+
       <div class="question">
         <div class="q-label">
           <span class="q-num">Q11</span>
-          <span class="q-text">¿Has leído y comprendes los Términos de Servicio (ToS) de Discord? <span class="badge badge-required">Requerido</span></span>
+          <span class="q-text">¿Conoces las Directrices de la Comunidad de Discord (Community Guidelines)? Menciona al menos 3 puntos que consideres importantes. <span class="badge badge-required">Requerido</span></span>
         </div>
-        <div class="radio-group">
-          <label class="radio-option"><input type="radio" name="12_Tos_Discord"> Sí, los he leído completamente</label>
-          <label class="radio-option"><input type="radio" name="12_Tos_Discord"> Los conozco, pero no los he leído formalmente</label>
-          <label class="radio-option"><input type="radio" name="12_Tos_Discord"> No los he leído</label>
-        </div>
+        <textarea name="13_Community_Guidelines" class="answer-field" placeholder="1. ...\n2. ...\n3. ..."></textarea>
       </div>
 
       <div class="question">
@@ -815,20 +820,49 @@
         Al enviar este formulario, tus respuestas serán revisadas por el equipo administrativo.<br>
         No garantizamos respuesta a todas las solicitudes. Solo las candidaturas seleccionadas serán contactadas.
       </p>
-      <button class="btn-submit" type="submit" id="submitBtn">Enviar Solicitud →</button>
+      <button class="btn-submit" type="submit" id="submitBtn">Reclutamiento suspendido</button>
     </div>
 
   </form>
 
   <div class="footer-bar">
-    <span><span class="status-dot"></span>Formulario activo · Reclutamiento abierto</span>
+    <span><span class="status-dot" id="statusDot"></span><span id="statusText">Formulario inactivo · Reclutamiento suspendido</span></span>
     <span>Equipo de Moderación · Discord Staff Form</span>
   </div>
 
 </div>
 
 <script>
+// ============================================
+//  SWITCH DE RECLUTAMIENTO
+//  true  = abierto | false = suspendido
+const RECLUTAMIENTO_ACTIVO = false;
+// ============================================
+
+window.addEventListener('DOMContentLoaded', function() {
+  const btn = document.getElementById('submitBtn');
+  const dot = document.getElementById('statusDot');
+  const statusText = document.getElementById('statusText');
+
+  if (RECLUTAMIENTO_ACTIVO) {
+    btn.disabled = false;
+    btn.textContent = 'Enviar Solicitud →';
+    btn.style.background = '';
+    btn.style.color = '';
+    btn.style.cursor = '';
+    btn.style.boxShadow = '';
+    dot.style.background = 'var(--green)';
+    statusText.textContent = 'Formulario activo · Reclutamiento abierto';
+  } else {
+    btn.disabled = true;
+    btn.textContent = 'Reclutamiento suspendido';
+    dot.style.background = 'var(--red)';
+    statusText.textContent = 'Formulario inactivo · Reclutamiento suspendido';
+  }
+});
+
 document.getElementById('mainForm').addEventListener('submit', async function(e) {
+  if (!RECLUTAMIENTO_ACTIVO) return;
   e.preventDefault();
   const btn = document.getElementById('submitBtn');
   btn.textContent = 'Enviando...';
@@ -856,4 +890,3 @@ document.getElementById('mainForm').addEventListener('submit', async function(e)
 </script>
 </body>
 </html>
-

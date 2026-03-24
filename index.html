@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solicitud — Equipo de Moderación</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b0d12;
+    --surface: #111318;
+    --surface2: #181b22;
+    --border: #1e2230;
+    --accent: #5865f2;
+    --accent2: #7289da;
+    --green: #57f287;
+    --red: #ed4245;
+    --yellow: #fee75c;
+    --text: #e8eaf2;
+    --muted: #6b7280;
+    --label: #a0aabb;
+    --glow: rgba(88,101,242,0.18);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Animated grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(88,101,242,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(88,101,242,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 60px 24px 100px;
+  }
+
+  /* Header */
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 12px;
+  }
+
+  .discord-icon {
+    width: 52px;
+    height: 52px;
+    background: var(--accent);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    flex-shrink: 0;
+    box-shadow: 0 0 28px var(--glow);
+  }
+
+  .header-text h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    color: #fff;
+  }
+
+  .header-text span {
+    font-size: 0.78rem;
+    color: var(--muted);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+    margin: 28px 0 40px;
+    opacity: 0.4;
+  }
+
+  .intro-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 18px 22px;
+    margin-bottom: 48px;
+    font-size: 0.82rem;
+    color: var(--label);
+    line-height: 1.7;
+  }
+
+  .intro-box strong { color: var(--text); }
+
+  /* Section */
+  .section {
+    margin-bottom: 52px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+
+  .section-num {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+  }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.01em;
+  }
+
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* Question */
+  .question {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 22px 24px;
+    margin-bottom: 14px;
+    transition: border-color 0.2s;
+  }
+
+  .question:hover { border-color: rgba(88,101,242,0.35); }
+
+  .q-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 0.82rem;
+    color: var(--label);
+    margin-bottom: 14px;
+    line-height: 1.6;
+  }
+
+  .q-num {
+    color: var(--accent);
+    font-weight: 500;
+    flex-shrink: 0;
+    font-size: 0.78rem;
+    margin-top: 1px;
+  }
+
+  .q-text { color: var(--text); font-size: 0.875rem; line-height: 1.6; }
+
+  .badge {
+    display: inline-block;
+    font-size: 0.65rem;
+    padding: 2px 8px;
+    border-radius: 99px;
+    margin-left: 8px;
+    vertical-align: middle;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .badge-required { background: rgba(237,66,69,0.15); color: var(--red); border: 1px solid rgba(237,66,69,0.25); }
+  .badge-optional { background: rgba(88,101,242,0.12); color: var(--accent2); border: 1px solid rgba(88,101,242,0.2); }
+  .badge-scenario { background: rgba(87,242,135,0.1); color: var(--green); border: 1px solid rgba(87,242,135,0.2); }
+  .badge-technical { background: rgba(254,231,92,0.1); color: var(--yellow); border: 1px solid rgba(254,231,92,0.2); }
+
+  .answer-field {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 14px;
+    width: 100%;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.82rem;
+    resize: vertical;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+    min-height: 42px;
+  }
+
+  .answer-field:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--glow);
+  }
+
+  .answer-field::placeholder { color: var(--muted); }
+
+  textarea.answer-field { min-height: 100px; line-height: 1.6; }
+
+  .radio-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .radio-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 14px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    color: var(--label);
+    transition: all 0.18s;
+    user-select: none;
+  }
+
+  .radio-option:hover { border-color: var(--accent); color: var(--text); }
+  .radio-option input { accent-color: var(--accent); }
+
+  .hint {
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .hint::before { content: '//'; color: var(--accent); opacity: 0.6; }
+
+  /* Glossary box */
+  .glossary {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 18px;
+    margin-bottom: 18px;
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  .glossary-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+
+  .gterm { color: var(--yellow); font-weight: 500; }
+
+  /* Scenario box */
+  .scenario-box {
+    background: linear-gradient(135deg, rgba(87,242,135,0.04), rgba(88,101,242,0.04));
+    border: 1px solid rgba(87,242,135,0.15);
+    border-radius: 8px;
+    padding: 16px 18px;
+    margin-bottom: 14px;
+    font-size: 0.8rem;
+    color: var(--label);
+    line-height: 1.7;
+  }
+
+  .scenario-tag {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--green);
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .scenario-box p { color: var(--text); font-size: 0.85rem; }
+
+  /* Submit */
+  .submit-section {
+    margin-top: 56px;
+    text-align: center;
+  }
+
+  .submit-note {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-bottom: 20px;
+    line-height: 1.6;
+  }
+
+  .btn-submit {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 14px 40px;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    transition: all 0.2s;
+    box-shadow: 0 4px 24px var(--glow);
+  }
+
+  .btn-submit:hover {
+    background: #4752c4;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(88,101,242,0.35);
+  }
+
+  .success-screen {
+    display: none;
+    text-align: center;
+    padding: 80px 24px;
+  }
+
+  .success-icon {
+    font-size: 64px;
+    margin-bottom: 24px;
+  }
+
+  .success-screen h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 12px;
+  }
+
+  .success-screen p {
+    color: var(--muted);
+    font-size: 0.85rem;
+    line-height: 1.7;
+    max-width: 420px;
+    margin: 0 auto;
+  }
+
+  .success-screen .green { color: var(--green); }
+
+  .footer-bar {
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+
+  .status-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    margin-right: 6px;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  @media (max-width: 600px) {
+    .header-text h1 { font-size: 1.5rem; }
+    .radio-group { flex-direction: column; }
+    .footer-bar { flex-direction: column; gap: 8px; text-align: center; }
+  }
+
+  .success-screen {
+    display: none;
+    text-align: center;
+    padding: 80px 24px;
+  }
+  .success-icon { font-size: 64px; margin-bottom: 24px; }
+  .success-screen h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 12px;
+  }
+  .success-screen p { color: var(--muted); font-size: 0.85rem; line-height: 1.7; max-width: 420px; margin: 0 auto; }
+  .success-screen .green { color: var(--green); }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="discord-icon">🛡️</div>
+    <div class="header-text">
+      <h1>Solicitud de Moderación</h1>
+      <span>Formulario de reclutamiento · Equipo Staff</span>
+    </div>
+  </div>
+  <div class="divider"></div>
+
+  <div class="intro-box">
+    <strong>Lee antes de continuar.</strong> Este formulario es parte del proceso de selección para unirte al equipo de moderación del servidor. 
+    Responde con sinceridad y detalle. Las respuestas vagas o incompletas reducen tus posibilidades. 
+    El proceso puede tardar <strong>hasta 7 días hábiles</strong>. Serás contactado/a por un miembro del staff si tu candidatura avanza.
+  </div>
+
+  <div class="success-screen" id="successScreen">
+    <div class="success-icon">🛡️</div>
+    <h2>¡Solicitud enviada!</h2>
+    <p>Tu formulario fue recibido correctamente.<br>El equipo de staff lo revisará en los próximos días.<br><br><span class="green">Solo las candidaturas seleccionadas serán contactadas.</span></p>
+  </div>
+  <form id="mainForm" action="https://formspree.io/f/mojkgdlo" method="POST">
+  <input type="hidden" name="_subject" value="Nueva solicitud - Equipo de Moderacion">
+  <input type="hidden" name="_language" value="es">
+
+    <!-- ===== SECCIÓN 1: IDENTIDAD ===== -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">01</div>
+        <div class="section-title">Información de Identidad</div>
+        <div class="section-line"></div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">
+          <span class="q-num">Q1</span>
+          <span class="q-text">¿Cuál es tu nombre de usuario en Discord? (incluyendo el tag, ej: usuario#0000 o @usuario) <span class="badge badge-required">Requerido</span></span>
+        </div>
+        <input class="answer-field" type="text" name="01_Usuario_Discord" placeholder="usuario#0000" required>
+      </div>
+
+      <div class="question">
+        <div class="q-label">
+          <span class="q-num">Q2</span>
+          <span class="q-text">¿Cuál es tu ID de usuario de Discord? <span class="badge badge-required">Requerido</span></span>
+        </div>
+        <input class="answer-field" type="text" name="02_ID_Discord" placeholder="000000000000000000" required>
+        <p class="hint">Activa el Modo Desarrollador en Ajustes → Avanzado → haz clic derecho en tu perfil → Copiar ID</p>
+      </div>
+
+      <div class="question">
+        <div class="q-label">
+          <span class="q-num">Q3</span>
+          <span class="q-text">¿Cuántos años tienes? <span class="badge badge-required">Requerido</span></span>
+        </div>
+        <div class="radio-group">
+          <label class="radio-option"><input type="radio" name="03_Edad"> Menos de 14</label>
+          <label class="radio-option"><input type="radio" name="03_Edad"> 14 – 15</label>
+          <label class="radio-option"><input type="radio" name="03_Edad"> 16 – 17</label>
+          <label class="radio-option"><input type="radio" name="03_Edad"> 18 – 20</label>
+          <label class="radio-option"><input type="radio" name="03_Edad"> 21 – 25</label>
+          <label class="radio-option"><input type="radio" name="03_Edad"> 26+</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">
+          <span class="q-num">Q4</span>
+          <span class="q-text">¿En qué país resides actualmente? <span class="badge badge-required">Requerido</span></span>
+        </div>
+        <input class="answer-field" type="text" name="04_Pais" placeholder="Ej: México, España, Argentina..." required>
+      </div>
+
+      <div class="question">
+        <div class="q-label">
+          <span class="q-num">Q5</span>
+          <span class="q-text">¿Cuál es tu zona horaria (UTC)? <span class="badge badge-required">Requerido</span></span>
+        </div>
+        <input class="answer-field" type="text" name="05_Zona_Horaria" placeholder="Ej: UTC-5 (Ciudad de México), UTC+1 (Madrid)..." required>
+        <p class="hint">Puedes consultar tu zona horaria en: time.is</p>
+      </div>
+
+      <div class="question">
+        <div class="q-label">
+          <span class="q-num">Q6</span>
+          <span class="q-text">¿Cuál es tu disponibilidad aproximada por semana para moderar el servidor? <span class="badge badge-required">Requerido</span></span>
+        </div>
+        <textarea name="06_Disponibilidad" class="answer-field" placeholder="Describe tu disponibilidad semanal en horas y los días que podrías estar activo/a..."></textarea>
+      </div>
+
+      <div class="question">
+        <div class="q-label">
+          <span class="q-num">Q7</span>
+          <span class="q-text">¿En qué horarios o días sueles estar más activo/a? <span class="badge badge-optional">Opcional</span></span>
+        </div>
+        <textarea name="07_Horarios_Activo" class="answer-field" placeholder="Ej: Tardes de lunes a viernes (18:00 – 22:00 UTC-5), fines de semana mañana..."></textarea>
+      </div>
+    </div>
+
+    <!-- ===== SECCIÓN 2: EXPERIENCIA ===== -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">02</div>
+        <div class="section-title">Experiencia en Moderación</div>
+        <div class="section-line"></div>
+      </div>
+
+
+
+      <div class="question">
+        <div class="q-label">
+          <span class="q-num">Q8</span>
+          <span class="q-text">¿Tienes experiencia moderando en otros servidores de Discord? Descríbela. <span class="badge badge-required">Requerido</span></span>
+        </div>
+        <textarea name="09_Experiencia_Otros_Servidores" class="answer-field" placeholder="Nombre del servidor, tamaño aproximado, rol que tenías, tiempo que estuviste, por qué saliste..."></textarea>
+        <p class="hint">Si no tienes experiencia previa, indícalo y explica por qué crees que puedes desempeñar el rol igualmente.</p>
+      </div>
+
+      <div class="question">
+        <div class="q-label">
+          <span class="q-num">Q9</span>
+          <span class="q-text">¿Qué herramientas o bots de moderación conoces o has utilizado? <span class="badge badge-required">Requerido</span></span>
+        </div>
+        <textarea name="10_Otros_Bots" class="answer-field" placeholder="Menciona los bots que conoces y describe tu nivel de experiencia con cada uno..."></textarea>
+      </div>
+
+      <div class="question">
+        <div class="q-label">
+          <span class="q-num">Q10</span>
+          <span class="q-text">¿Por qué quieres unirte al equipo de moderación de este servidor en particular? <span class="badge badge-required">Requerido</span></span>
+        </div>
+        <textarea name="11_Motivacion" class="answer-field" placeholder="Sé específico/a. ¿Qué te motivó? ¿Qué has observado en el servidor que crees que podrías mejorar o mantener?"></textarea>
+      </div>
+    </div>
+
+    <!-- ===== SECCIÓN 3: CONOCIMIENTO DE NORMAS ===== -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">03</div>
+        <div class="section-title">Conocimiento de Normas</div>
+        <div class="section-line"></div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">
+          <span class="q-num">Q11</span>
+          <span class="q-text">¿Has leído y comprendes los Términos de Servicio (ToS) de Discord? <span class="badge badge-required">Requerido</span></span>
+        </div>
+        <div class="radio-group">
+          <label class="radio-option"><input type="radio" name="12_Tos_Discord"> Sí, los he leído completamente</label>
+          <label class="radio-option"><input type="radio" name="12_Tos_Discord"> Los conozco, pero no los he leído formalmente</label>
+          <label class="radio-option"><input type="radio" name="12_Tos_Discord"> No los he leído</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">
+          <span class="q-num">Q12</span>
+          <span class="q-text">¿Conoces las Directrices de la Comunidad de Discord (Community Guidelines)? Menciona al menos 3 puntos que consideres importantes. <span class="badge badge-required">Requerido</span></span>
+        </div>
+        <textarea name="13_Community_Guidelines" class="answer-field" placeholder="1. ...\n2. ...\n3. ..."></textarea>
+      </div>
+
+      <div class="question">
+        <div class="q-label">
+          <span class="q-num">Q13</span>
+          <span class="q-text">¿Has leído el reglamento interno de este servidor? Menciona al menos 2 reglas específicas del servidor que recuerdes. <span class="badge badge-required">Requerido</span></span>
+        </div>
+        <textarea name="14_Reglas_Servidor" class="answer-field" placeholder="Regla 1: ...\nRegla 2: ..."></textarea>
+        <p class="hint">Si no recuerdas el reglamento del servidor, te recomendamos revisarlo antes de continuar con el formulario.</p>
+      </div>
+
+      <div class="question">
+        <div class="q-label">
+          <span class="q-num">Q14</span>
+          <span class="q-text">¿Qué tipo de contenido está estrictamente prohibido en Discord según sus políticas globales? <span class="badge badge-required">Requerido</span></span>
+        </div>
+        <textarea name="15_Contenido_Prohibido" class="answer-field" placeholder="Enumera los tipos de contenido que nunca están permitidos bajo ninguna circunstancia..."></textarea>
+      </div>
+    </div>
+
+    <!-- ===== SECCIÓN 4: VOCABULARIO TÉCNICO ===== -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">04</div>
+        <div class="section-title">Vocabulario y Conceptos Técnicos</div>
+        <div class="section-line"></div>
+      </div>
+
+      <div class="glossary">
+        <div class="glossary-title">// Instrucción</div>
+        Define con tus propias palabras cada uno de los siguientes términos de moderación. 
+        No uses definiciones copiadas. Queremos evaluar si realmente comprendes y usarías estos conceptos en la práctica.
+      </div>
+
+      <div class="question">
+        <div class="q-label">
+          <span class="q-num">T1</span>
+          <span class="q-text">¿Qué es un <span class="gterm">Ban</span>? ¿Cuándo aplicarías un ban permanente vs. uno temporal? <span class="badge badge-technical">Técnico</span></span>
+        </div>
+        <textarea name="T1_Definicion_Ban" class="answer-field" placeholder="Define el término y explica en qué situaciones usarías cada variante..."></textarea>
+      </div>
+
+      <div class="question">
+        <div class="q-label">
+          <span class="q-num">T2</span>
+          <span class="q-text">¿Qué es un <span class="gterm">Kick</span>? ¿En qué se diferencia de un ban? <span class="badge badge-technical">Técnico</span></span>
+        </div>
+        <textarea name="T2_Definicion_Kick" class="answer-field" placeholder="Define y diferencia ambos términos..."></textarea>
+      </div>
+
+      <div class="question">
+        <div class="q-label">
+          <span class="q-num">T3</span>
+          <span class="q-text">¿Qué es un <span class="gterm">Timeout / Mute temporal</span>? ¿Cuándo lo usarías como primera medida? <span class="badge badge-technical">Técnico</span></span>
+        </div>
+        <textarea name="T3_Definicion_Timeout" class="answer-field" placeholder="Describe el término y un caso práctico de uso..."></textarea>
+      </div>
+
+      <div class="question">
+        <div class="q-label">
+          <span class="q-num">T4</span>
+          <span class="q-text">¿Qué es el <span class="gterm">Spam</span>? ¿Qué formas de spam existen en Discord? <span class="badge badge-technical">Técnico</span></span>
+        </div>
+        <textarea name="T4_Definicion_Spam" class="answer-field" placeholder="Define el término con tus propias palabras..."></textarea>
+      </div>
+
+      <div class="question">
+        <div class="q-label">
+          <span class="q-num">T5</span>
+          <span class="q-text">¿Qué es el <span class="gterm">Warn (advertencia)</span>? ¿Cómo funciona un sistema de advertencias progresivo? <span class="badge badge-technical">Técnico</span></span>
+        </div>
+        <textarea name="T5_Definicion_Warn" class="answer-field" placeholder="Explica qué es un warn y cómo estructurarías el escalado de sanciones..."></textarea>
+      </div>
+
+      <div class="question">
+        <div class="q-label">
+          <span class="q-num">T6</span>
+          <span class="q-text">¿Qué es el <span class="gterm">Raid</span> en Discord? ¿Cómo actuarías si el servidor está siendo raideado? <span class="badge badge-technical">Técnico</span></span>
+        </div>
+        <textarea name="T6_Definicion_Raid" class="answer-field" placeholder="Define el término con tus propias palabras..."></textarea>
+      </div>
+
+      <div class="question">
+        <div class="q-label">
+          <span class="q-num">T7</span>
+          <span class="q-text">¿Qué es el <span class="gterm">Slowmode</span>? ¿En qué situaciones lo activarías? <span class="badge badge-technical">Técnico</span></span>
+        </div>
+        <textarea name="T7_Definicion_Slowmode" class="answer-field" placeholder="Explica qué hace el slowmode y cuándo es útil aplicarlo..."></textarea>
+      </div>
+
+      <div class="question">
+        <div class="q-label">
+          <span class="q-num">T8</span>
+          <span class="q-text">¿Qué es el <span class="gterm">Phishing</span> en el contexto de Discord? ¿Cómo identificarías un intento de phishing? <span class="badge badge-technical">Técnico</span></span>
+        </div>
+        <textarea name="T8_Definicion_Phishing" class="answer-field" placeholder="Define el término con tus propias palabras..."></textarea>
+      </div>
+
+      <div class="question">
+        <div class="q-label">
+          <span class="q-num">T9</span>
+          <span class="q-text">¿Qué es un <span class="gterm">Alt / Cuenta alternativa</span>? ¿Qué riesgos representan para un servidor? <span class="badge badge-technical">Técnico</span></span>
+        </div>
+        <textarea name="T9_Definicion_Alt" class="answer-field" placeholder="Define el término con tus propias palabras..."></textarea>
+      </div>
+
+      <div class="question">
+        <div class="q-label">
+          <span class="q-num">T10</span>
+          <span class="q-text">¿Qué es un <span class="gterm">Lockdown de servidor</span>? ¿Cuándo y cómo lo implementarías? <span class="badge badge-technical">Técnico</span></span>
+        </div>
+        <textarea name="T10_Definicion_Lockdown" class="answer-field" placeholder="Describe el proceso de lockdown y en qué emergencias lo aplicarías..."></textarea>
+      </div>
+    </div>
+
+    <!-- ===== SECCIÓN 5: ESCENARIOS HIPOTÉTICOS ===== -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">05</div>
+        <div class="section-title">Escenarios Hipotéticos</div>
+        <div class="section-line"></div>
+      </div>
+
+      <div class="glossary">
+        <div class="glossary-title">// Instrucción</div>
+        Para cada escenario, describe paso a paso qué harías. Ten en cuenta: la sanción apropiada, cómo documentarías el caso, 
+        cómo comunicarías la decisión a los involucrados y si escalarías a un rango superior.
+      </div>
+
+      <!-- Escenario 1 -->
+      <div class="scenario-box">
+        <div class="scenario-tag">▶ Escenario A · Conflicto entre usuarios</div>
+        <p>Dos miembros del servidor están teniendo una discusión acalorada en un canal público. Los insultos comienzan a escalar. Uno de ellos te menciona directamente diciéndote que el otro lo está acosando. El otro miembro afirma que él solo se está defendiendo.</p>
+      </div>
+      <div class="question">
+        <div class="q-label">
+          <span class="q-num">E1</span>
+          <span class="q-text">¿Cómo manejarías esta situación de principio a fin? <span class="badge badge-scenario">Escenario</span></span>
+        </div>
+        <textarea name="E1_Conflicto_Usuarios" class="answer-field" style="min-height: 130px;" placeholder="Describe aquí lo que harías en esta situación..."></textarea>
+      </div>
+
+      <!-- Escenario 2 -->
+      <div class="scenario-box">
+        <div class="scenario-tag">▶ Escenario B · Contenido prohibido</div>
+        <p>Un usuario sube una imagen en un canal general que contiene contenido que viola claramente las normas del servidor (contenido gráfico violento o de naturaleza inapropiada). El mensaje tiene reacciones y algunos miembros ya lo están compartiendo en otros canales.</p>
+      </div>
+      <div class="question">
+        <div class="q-label">
+          <span class="q-num">E2</span>
+          <span class="q-text">¿Cuáles son tus primeras acciones y cómo procedes? <span class="badge badge-scenario">Escenario</span></span>
+        </div>
+        <textarea name="E2_Contenido_Prohibido" class="answer-field" style="min-height: 130px;" placeholder="Describe aquí lo que harías en esta situación..."></textarea>
+      </div>
+
+      <!-- Escenario 3 -->
+      <div class="scenario-box">
+        <div class="scenario-tag">▶ Escenario C · Abuso de poder del staff</div>
+        <p>Notas que un miembro del staff está abusando de su cargo: aplica sanciones de forma injustificada, favorece a ciertos usuarios o actúa de manera inapropiada dentro del equipo. No es tu superior jerárquico directo.</p>
+      </div>
+      <div class="question">
+        <div class="q-label">
+          <span class="q-num">E3</span>
+          <span class="q-text">¿Qué harías en esta situación? ¿Confrontarías al miembro del staff directamente? <span class="badge badge-scenario">Escenario</span></span>
+        </div>
+        <textarea name="E3_Abuso_Staff" class="answer-field" style="min-height: 130px;" placeholder="Describe aquí lo que harías en esta situación..."></textarea>
+      </div>
+
+      <!-- Escenario 4 -->
+      <div class="scenario-box">
+        <div class="scenario-tag">▶ Escenario D · Raid o ataque al servidor</div>
+        <p>De repente, decenas de cuentas nuevas ingresan al servidor en cuestión de minutos y empiezan a enviar mensajes de spam con links de phishing y contenido explícito en varios canales al mismo tiempo. Eres el único moderador activo en ese momento.</p>
+      </div>
+      <div class="question">
+        <div class="q-label">
+          <span class="q-num">E4</span>
+          <span class="q-text">¿Cuál es tu protocolo de respuesta inmediata? <span class="badge badge-scenario">Escenario</span></span>
+        </div>
+        <textarea name="E4_Raid_Servidor" class="answer-field" style="min-height: 130px;" placeholder="Describe aquí lo que harías en esta situación..."></textarea>
+      </div>
+
+      <!-- Escenario 5 -->
+      <div class="scenario-box">
+        <div class="scenario-tag">▶ Escenario E · Usuario en situación delicada</div>
+        <p>Un usuario envía mensajes en un canal donde insinúa que está pasando por una situación personal muy difícil y hace comentarios que podrían interpretarse como una crisis emocional. Otros usuarios no están reaccionando de manera apropiada.</p>
+      </div>
+      <div class="question">
+        <div class="q-label">
+          <span class="q-num">E5</span>
+          <span class="q-text">¿Cómo abordarías esta situación con empatía y responsabilidad? <span class="badge badge-scenario">Escenario</span></span>
+        </div>
+        <textarea name="E5_Usuario_Crisis" class="answer-field" style="min-height: 130px;" placeholder="Describe aquí lo que harías en esta situación..."></textarea>
+      </div>
+
+      <!-- Escenario 6 -->
+      <div class="scenario-box">
+        <div class="scenario-tag">▶ Escenario F · Acusación contra ti</div>
+        <p>Un usuario afirma públicamente que tú, como moderador, lo baneaste o silenciaste de manera injusta y está incitando a otros miembros a quejarse en el servidor. La acusación es falsa, pero varios usuarios están reaccionando negativamente hacia ti.</p>
+      </div>
+      <div class="question">
+        <div class="q-label">
+          <span class="q-num">E6</span>
+          <span class="q-text">¿Cómo manejarías esta situación manteniendo la profesionalidad? <span class="badge badge-scenario">Escenario</span></span>
+        </div>
+        <textarea name="E6_Acusacion_Contra_Ti" class="answer-field" style="min-height: 130px;" placeholder="Describe aquí lo que harías en esta situación..."></textarea>
+      </div>
+    </div>
+
+    <!-- ===== SECCIÓN 6: CIERRE ===== -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">06</div>
+        <div class="section-title">Cierre y Datos Finales</div>
+        <div class="section-line"></div>
+      </div>
+
+      <div class="question">
+        <div class="q-label">
+          <span class="q-num">Q15</span>
+          <span class="q-text">¿Hay algo más que quieras que el equipo sepa sobre ti y tu candidatura? <span class="badge badge-optional">Opcional</span></span>
+        </div>
+        <textarea name="Q16_Info_Adicional" class="answer-field" placeholder="Habilidades adicionales, idiomas que hablas, contexto que no pudiste dar en preguntas anteriores..."></textarea>
+      </div>
+
+
+
+      <div class="question">
+        <div class="q-label">
+          <span class="q-num">Q16</span>
+          <span class="q-text">Al enviar este formulario, confirmo que todas mis respuestas son honestas y que acepto el proceso de evaluación del servidor. <span class="badge badge-required">Requerido</span></span>
+        </div>
+        <div class="radio-group">
+          <label class="radio-option"><input type="radio" name="18_Confirmacion" required> ✓ Confirmo y acepto</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUBMIT -->
+    <div class="submit-section">
+      <p class="submit-note">
+        Al enviar este formulario, tus respuestas serán revisadas por el equipo administrativo.<br>
+        No garantizamos respuesta a todas las solicitudes. Solo las candidaturas seleccionadas serán contactadas.
+      </p>
+      <button class="btn-submit" type="submit" id="submitBtn">Enviar Solicitud →</button>
+    </div>
+
+  </form>
+
+  <div class="footer-bar">
+    <span><span class="status-dot"></span>Formulario activo · Reclutamiento abierto</span>
+    <span>Equipo de Moderación · Discord Staff Form</span>
+  </div>
+
+</div>
+
+<script>
+document.getElementById('mainForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const btn = document.getElementById('submitBtn');
+  btn.textContent = 'Enviando...';
+  btn.disabled = true;
+  const data = new FormData(this);
+  try {
+    const res = await fetch(this.action, {
+      method: 'POST',
+      body: data,
+      headers: { 'Accept': 'application/json' }
+    });
+    if (res.ok) {
+      document.getElementById('mainForm').style.display = 'none';
+      document.getElementById('successScreen').style.display = 'block';
+      window.scrollTo({top: 0, behavior: 'smooth'});
+    } else {
+      btn.textContent = '⚠ Error al enviar. Intenta de nuevo.';
+      btn.disabled = false;
+    }
+  } catch(err) {
+    btn.textContent = '⚠ Error de conexión. Intenta de nuevo.';
+    btn.disabled = false;
+  }
+});
+</script>
+</body>
+</html>
+
